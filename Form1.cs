@@ -1,8 +1,9 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Drawing;
+using System.IO;
 using System.Windows.Forms;
+
 
 namespace WinFormsApp1
 {
@@ -11,7 +12,7 @@ namespace WinFormsApp1
         private Dictionary<string, string> vehicles = new Dictionary<string, string>
         {
             { "trains", "rails" },
-            { "planes", "motors" },
+            { "airplanes", "motors" },
             { "cars", "wheels" }
             // Add more vehicles as needed
         };
@@ -19,16 +20,42 @@ namespace WinFormsApp1
         public Form1()
         {
             InitializeComponent();
+            InitializeDataGridView();
+            FillGrid();
+
+            // Add this line to subscribe to the RowPostPaint event
+            dataGridView1.RowPostPaint += DataGridView1_RowPostPaint;
         }
+
+        private void DataGridView1_RowPostPaint(object sender, DataGridViewRowPostPaintEventArgs e)
+        {
+            DataGridViewRow row = dataGridView1.Rows[e.RowIndex];
+            if (row.DataBoundItem is Players player)
+            {
+                // Check if the player object has an image and it's not null
+                if (player.Image != null)
+                {
+                    int imageHeight = player.Image.Height;
+                    if (imageHeight > row.Height)
+                    {
+                        row.Height = imageHeight;
+                    }
+                }
+            }
+        }
+
+
 
         private void InitializeDataGridView()
         {
-            dataGridView1.AutoGenerateColumns = false;
+            dataGridView1.AutoGenerateColumns = true;
+        }
 
-            // Create columns for the DataGridView
-            dataGridView1.Columns.Add("VehicleName", "Vehicle Name");
-            dataGridView1.Columns.Add("MovementMethod", "Movement Method");
-
+        public class Players
+        {
+            public string Vehicle { get; set; }
+            public string Method { get; set; }
+            public Image Image { get; set; } // Add this property
         }
 
 
@@ -44,40 +71,16 @@ namespace WinFormsApp1
                     {
                         // Assuming you want to use "vehicle.Key" and "vehicle.Value" as values
                         Vehicle = vehicle.Key,
-                        Movement = vehicle.Value,
-                };
+                        Method = vehicle.Value
+                    };
+
+                    // Load the image from the file path
+                    p.Image = Image.FromFile($"Images\\{vehicle.Key.ToLower()}.png");
 
                     playersList.Add(p);
                 }
 
                 dataGridView1.DataSource = playersList;
-
-                // Set the value for the Appearances column to display the image
-                foreach (DataGridViewRow row in dataGridView1.Rows)
-                {
-                    var player = (Players)row.DataBoundItem;
-
-                    // Check if the Appearances property is a valid image file path
-                    if (File.Exists(player.Image))
-                    {
-                        // Load the image from the file path
-                        using (Image image = Image.FromFile(player.Image))
-                        {
-                            // Set the cell in the "Appearances" column to display the image
-                            var appearancesColumnIndex = dataGridView1.Columns["Image"].Index; // Use the correct column name
-                            row.Cells[appearancesColumnIndex].Value = image;
-                        }
-                    }
-                    else
-                    {
-                        // Handle the case where the image file does not exist
-                        // You can set a default image or display an error message.
-                        // For example, set a default image:
-                        var appearancesColumnIndex = dataGridView1.Columns["Image"].Index; // Use the correct column name
-                        var defaultImage = Image.FromFile("Images/car.png"); // Provide the path to your default image
-                        row.Cells[appearancesColumnIndex].Value = defaultImage;
-                    }
-                }
             }
             catch (Exception ex)
             {
@@ -85,16 +88,11 @@ namespace WinFormsApp1
             }
         }
 
-        public class Players
-        {
-            public string? Vehicle { set; get; }
-            public string? Movement { set; get; }
-            public string? Image { set; get; }
-
-        }
 
         private void button1_Click(object sender, EventArgs e)
         {
+            // You can implement file opening logic here if needed
+            // For now, it calls FillGrid to populate the DataGridView
             FillGrid();
         }
 
