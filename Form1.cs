@@ -69,12 +69,10 @@ namespace WinFormsApp1
                 {
                     Players p = new Players
                     {
-                        // Assuming you want to use "vehicle.Key" and "vehicle.Value" as values
                         Vehicle = vehicle.Key,
                         Method = vehicle.Value
                     };
 
-                    // Load the image from the file path
                     p.Image = Image.FromFile($"Images\\{vehicle.Key.ToLower()}.png");
 
                     playersList.Add(p);
@@ -91,8 +89,6 @@ namespace WinFormsApp1
 
         private void button1_Click(object sender, EventArgs e)
         {
-            // You can implement file opening logic here if needed
-            // For now, it calls FillGrid to populate the DataGridView
             FillGrid();
         }
 
