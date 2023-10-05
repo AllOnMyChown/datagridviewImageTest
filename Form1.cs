@@ -7,13 +7,15 @@ using System.Windows.Forms;
 
 namespace WinFormsApp1
 {
+
+
     public partial class Form1 : Form
     {
         private Dictionary<string, string> vehicles = new Dictionary<string, string>
         {
-            { "trains", "rails" },
-            { "airplanes", "motors" },
-            { "cars", "wheels" }
+            { "train", "rails" },
+            { "airplane", "jet engine" },
+            { "car", "wheels" }
             // Add more vehicles as needed
         };
 
@@ -43,8 +45,6 @@ namespace WinFormsApp1
                 }
             }
         }
-
-
 
         private void InitializeDataGridView()
         {
